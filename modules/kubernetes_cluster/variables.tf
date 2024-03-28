@@ -40,40 +40,10 @@ variable "vnet_subnet_id" {
   default     = ""
 }
 
-variable "network_plugin" {
-  type        = string
-  description = "Network plugin to use for networking. Currently supported values are azure, kubenet and none. "
-  default     = ""
-}
-
-variable "network_policy" {
-  type        = string
-  description = "Sets up network policy to be used with Azure CNI. Network policy allows us to control the traffic flow between pods. Currently supported values are calico and azure."
-  default     = ""
-}
-
-variable "dns_service_ip" {
-  type        = string
-  description = "IP address within the Kubernetes service address range that will be used by cluster service discovery (kube-dns). "
-  default     = ""
-}
-
-variable "outbound_type" {
-  type        = string
-  description = "The outbound (egress) routing method which should be used for this Kubernetes Cluster. Possible values are loadBalancer, userDefinedRouting, managedNATGateway and userAssignedNATGateway. Defaults to loadBalancer. "
-  default     = ""
-}
-
-variable "service_cidr" {
-  type        = string
-  description = "The Network Range used by the Kubernetes service. "
-  default     = ""
-}
-
-variable "load_balancer_sku" {
-  type        = string
-  description = "Specifies the SKU of the Load Balancer used for this Kubernetes Cluster. Possible values are basic and standard. Defaults to standard. "
-  default     = ""
+variable "network_profile" {
+  type        = any
+  description = "Block of network profile consists of network_plugin, network_mode, network_policy, dns_service_ip, network_plugin_mode, outbound_type, service_cidr, load_balancer_sku"
+  default     = {}
 }
 
 variable "identity_type" {

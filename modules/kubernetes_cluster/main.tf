@@ -19,19 +19,27 @@ resource "azurerm_kubernetes_cluster" "aks" {
       max_pods             = default_node_pool.value.max_pods
       node_labels          = default_node_pool.value.node_labels
       os_disk_size_gb      = default_node_pool.value.os_disk_size_gb
-      os_disk_type         = default_node_pool.value.os_disk_type
-      type                 = default_node_pool.value.type
+      os_disk_type         = lookup(default_node_pool.value, "os_disk_type", "Managed")
+      os_sku               = lookup(default_node_pool.value, "os_sku", "Ubuntu")
+      scale_down_mode      = lookup(default_node_pool.value, "scale_down_mode", "Delete")
+      type                 = lookup(default_node_pool.value, "type", "VirtualMachineScaleSets")
       orchestrator_version = default_node_pool.value.kubernetes_version
     }
   }
 
-  network_profile {
-    network_plugin    = var.network_plugin
-    network_policy    = var.network_policy
-    dns_service_ip    = var.dns_service_ip
-    outbound_type     = var.outbound_type
-    service_cidr      = var.service_cidr
-    load_balancer_sku = var.load_balancer_sku
+  dynamic "network_profile" {
+    for_each = var.network_profile
+    content {
+      network_plugin      = network_profile.value.network_plugin
+      network_mode        = network_profile.value.network_mode
+      network_policy      = network_profile.value.network_policy
+      dns_service_ip      = network_profile.value.dns_service_ip
+      network_plugin_mode = network_profile.value.network_plugin_mode
+      outbound_type       = lookup(network_profile.value, "outbound_type", "loadBalancer")
+      service_cidr        = network_profile.value.service_cidr
+      service_cidrs       = lookup(default_node_pool.value, "service_cidrs", [])
+      load_balancer_sku   = lookup(network_profile.value, "load_balancer_sku", "standard")
+    }
   }
 
   identity {
